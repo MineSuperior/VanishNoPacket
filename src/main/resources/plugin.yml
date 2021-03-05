@@ -1,6 +1,6 @@
 name: VanishNoPacket
 main: org.kitteh.vanish.VanishPlugin
-version: '${vnp-version}'
+version: '${project.version}'
 website: http://kitteh.org
 softdepend: [Essentials,ProtocolLib,Vault]
 author: mbaxter

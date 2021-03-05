@@ -23,8 +23,8 @@ public final class VanishAnnounceManipulator {
 
     VanishAnnounceManipulator(VanishPlugin plugin) {
         this.plugin = plugin;
-        this.playerOnlineStatus = new HashMap<String, Boolean>();
-        this.delayedAnnouncePlayerList = new ArrayList<String>();
+        this.playerOnlineStatus = new HashMap<>();
+        this.delayedAnnouncePlayerList = new ArrayList<>();
     }
 
     public void addToDelayedAnnounce(String player) {
@@ -57,11 +57,7 @@ public final class VanishAnnounceManipulator {
             return false;
         }
         playerName = player.getName();
-        if (this.playerOnlineStatus.containsKey(playerName)) {
-            return this.playerOnlineStatus.get(playerName);
-        } else {
-            return true;
-        }
+        return this.playerOnlineStatus.getOrDefault(playerName, true);
     }
 
     /**

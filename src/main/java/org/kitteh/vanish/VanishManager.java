@@ -40,8 +40,8 @@ public final class VanishManager {
     }
 
     private final class ShowPlayerHandler implements Runnable {
-        Set<ShowPlayerEntry> entries = new HashSet<ShowPlayerEntry>();
-        Set<ShowPlayerEntry> next = new HashSet<ShowPlayerEntry>();
+        Set<ShowPlayerEntry> entries = new HashSet<>();
+        Set<ShowPlayerEntry> next = new HashSet<>();
 
         public void add(ShowPlayerEntry player) {
             this.entries.add(player);
@@ -63,9 +63,9 @@ public final class VanishManager {
     }
 
     private final VanishPlugin plugin;
-    private final Set<String> vanishedPlayerNames = Collections.synchronizedSet(new HashSet<String>());
-    private final Map<String, Boolean> sleepIgnored = new HashMap<String, Boolean>();
-    private final Set<UUID> bats = new HashSet<UUID>();
+    private final Set<String> vanishedPlayerNames = Collections.synchronizedSet(new HashSet<>());
+    private final Map<String, Boolean> sleepIgnored = new HashMap<>();
+    private final Set<UUID> bats = new HashSet<>();
     private final VanishAnnounceManipulator announceManipulator;
     private final Random random = new Random();
     private final ShowPlayerHandler showPlayer = new ShowPlayerHandler();
@@ -75,12 +75,9 @@ public final class VanishManager {
         this.announceManipulator = new VanishAnnounceManipulator(this.plugin);
         this.plugin.getServer().getScheduler().scheduleSyncRepeatingTask(this.plugin, this.showPlayer, 4, 4);
 
-        this.plugin.getServer().getMessenger().registerIncomingPluginChannel(this.plugin, "vanishStatus", new PluginMessageListener() {
-            @Override
-            public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-                if (channel.equals("vanishStatus") && new String(message).equals("check")) {
-                    player.sendPluginMessage(plugin, "vanishStatus", VanishManager.this.isVanished(player) ? new byte[]{0x01} : new byte[]{0x00});
-                }
+        this.plugin.getServer().getMessenger().registerIncomingPluginChannel(this.plugin, "vanishStatus", (channel, player, message) -> {
+            if (channel.equals("vanishStatus") && new String(message).equals("check")) {
+                player.sendPluginMessage(plugin, "vanishStatus", VanishManager.this.isVanished(player) ? new byte[]{0x01} : new byte[]{0x00});
             }
         });
         this.plugin.getServer().getMessenger().registerOutgoingPluginChannel(this.plugin, "vanishStatus");
@@ -240,9 +237,9 @@ public final class VanishManager {
             this.setSleepingIgnored(vanishingPlayer);
             if (VanishPerms.canNotFollow(vanishingPlayer)) {
                 for (final Entity entity : vanishingPlayer.getNearbyEntities(100, 100, 100)) {
-                    if ((entity != null) && (entity instanceof Creature)) {
+                    if (entity instanceof Creature) {
                         final Creature creature = ((Creature) entity);
-                        if ((creature != null) && (creature.getTarget() != null) && creature.getTarget().equals(vanishingPlayer)) {
+                        if (creature.getTarget() != null && creature.getTarget().equals(vanishingPlayer)) {
                             creature.setTarget(null);
                         }
                     }
@@ -324,66 +321,12 @@ public final class VanishManager {
         }
     }
 
-    private void effectBats(final Location location) {
-        final Set<UUID> batty = new HashSet<UUID>();
-        for (int x = 0; x < 10; x++) {
-            batty.add(location.getWorld().spawnEntity(location, EntityType.BAT).getUniqueId());
-        }
-        this.bats.addAll(batty);
-        this.plugin.getServer().getScheduler().runTaskLater(this.plugin, new Runnable() {
-            @Override
-            public void run() {
-                VanishManager.this.effectBatsCleanup(location.getWorld(), batty);
-                VanishManager.this.bats.removeAll(batty);
-            }
-        }, 3 * 20);
-    }
-
     private void effectBatsCleanup(World world, Set<UUID> bats) {
         for (final Entity entity : world.getEntities()) {
             if (bats.contains(entity.getUniqueId())) {
                 world.playEffect(entity.getLocation(), Effect.SMOKE, this.random.nextInt(9));
                 entity.remove();
             }
-        }
-    }
-
-    private void effectExplosion(Player player) {
-        Location loc = player.getLocation();
-        player.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), 0F, false, false);
-    }
-
-    private void effectFlames(Location location) {
-        for (int i = 0; i < 10; i++) {
-            location.getWorld().playEffect(location, Effect.MOBSPAWNER_FLAMES, this.random.nextInt(9));
-        }
-    }
-
-    private void effectLightning(Location location) {
-        final int x = location.getBlockX();
-        final double y = location.getBlockY();
-        final int z = location.getBlockZ();
-        for (int i = 0; i < Settings.getLightningCount(); i++) {
-            double xToStrike;
-            double zToStrike;
-            if (this.random.nextBoolean()) {
-                xToStrike = x + this.random.nextInt(6);
-            } else {
-                xToStrike = x - this.random.nextInt(6);
-            }
-            if (this.random.nextBoolean()) {
-                zToStrike = z + this.random.nextInt(6);
-            } else {
-                zToStrike = z - this.random.nextInt(6);
-            }
-            final Location toStrike = new Location(location.getWorld(), xToStrike, y, zToStrike);
-            location.getWorld().strikeLightningEffect(toStrike);
-        }
-    }
-
-    private void effectSmoke(Location location) {
-        for (int i = 0; i < 10; i++) {
-            location.getWorld().playEffect(location, Effect.SMOKE, this.random.nextInt(9));
         }
     }
 

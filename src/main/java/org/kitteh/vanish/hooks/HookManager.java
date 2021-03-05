@@ -29,7 +29,7 @@ public final class HookManager {
         }
     }
 
-    private final HashMap<String, Hook> hooks = new HashMap<String, Hook>();
+    private final HashMap<String, Hook> hooks = new HashMap<>();
     private final VanishPlugin plugin;
 
     public HookManager(VanishPlugin plugin) {
@@ -43,7 +43,7 @@ public final class HookManager {
      * @return a list of deregistered hook names. Empty list if nothing deregistered.
      */
     public List<String> deregisterHook(Hook hook) {
-        final List<String> ret = new ArrayList<String>();
+        final List<String> ret = new ArrayList<>();
         for (final Map.Entry<String, Hook> i : this.hooks.entrySet()) {
             if (i.getValue().equals(hook)) {
                 this.deregisterHook(i.getKey());

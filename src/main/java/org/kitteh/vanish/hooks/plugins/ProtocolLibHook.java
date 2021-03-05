@@ -58,12 +58,9 @@ public final class ProtocolLibHook extends Hook {
                             }
                             stringModifier.write(0, builder.toString());
                         }
-                    } catch (final FieldAccessException e) {
-                    }
+                    } catch (final FieldAccessException ignore) {}
                 }
             });
-        } else {
-            return;
         }
     }
 }
