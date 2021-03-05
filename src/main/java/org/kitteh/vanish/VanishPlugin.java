@@ -18,8 +18,6 @@ import org.kitteh.vanish.listeners.ListenPlayerMessages;
 import org.kitteh.vanish.listeners.ListenPlayerOther;
 import org.kitteh.vanish.listeners.ListenServerPing;
 import org.kitteh.vanish.listeners.ListenToYourHeart;
-import org.kitteh.vanish.listeners.TagAPIListener;
-import org.kitteh.vanish.metrics.MetricsOverlord;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -291,7 +289,6 @@ public final class VanishPlugin extends JavaPlugin {
                     this.getLogger().warning("Update to TagAPI 3.0 or later to use name coloring");
                     break dance;
                 }
-                this.getServer().getPluginManager().registerEvents(new TagAPIListener(this), this);
                 this.getLogger().info("Using color changing features of TagAPI.");
             } else {
                 this.getLogger().info("Colored nametags enabled, but I couldn't find TagAPI");
@@ -304,29 +301,12 @@ public final class VanishPlugin extends JavaPlugin {
         if (this.getConfig().getBoolean("hooks.essentials", false)) {
             this.hookManager.getHook(HookType.Essentials).onEnable();
         }
-        this.hookManager.getHook(HookType.GeoIPTools).onEnable();
-        if (this.getConfig().getBoolean("hooks.dynmap", false)) {
-            this.hookManager.getHook(HookType.Dynmap).onEnable();
-        }
         //if (this.getServer().getPluginManager().getPlugin("ProtocolLib") != null) {
         //    this.hookManager.getHook(HookType.ProtocolLib).onEnable();
         //}
 
         final VanishPlugin self = this;
         //Post-load stuff
-        this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-            @Override
-            public void run() {
-                if (VanishPlugin.this.getConfig().getBoolean("hooks.JSONAPI", false)) {
-                    VanishPlugin.this.hookManager.getHook(HookType.JSONAPI).onEnable();
-                }
-                MetricsOverlord.init(self);
-            }
-        }, 1);
-
-        if (this.getConfig().getBoolean("hooks.spoutcraft", false)) {
-            this.hookManager.getHook(HookType.SpoutCraft).onEnable();
-        }
 
         this.manager = new VanishManager(this);
 
